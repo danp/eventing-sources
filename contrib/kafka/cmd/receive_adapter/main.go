@@ -40,6 +40,9 @@ const (
 	envNetSASLUser      = "KAFKA_NET_SASL_USER"
 	envNetSASLPassword  = "KAFKA_NET_SASL_PASSWORD"
 	envNetTLSEnable     = "KAFKA_NET_TLS_ENABLE"
+	envNetTLSCert       = "KAFKA_NET_TLS_CERT"
+	envNetTLSKey        = "KAFKA_NET_TLS_KEY"
+	envNetTLSCACert     = "KAFKA_NET_TLS_CA_CERT"
 	envSinkURI          = "SINK_URI"
 )
 
@@ -88,6 +91,9 @@ func main() {
 			},
 			TLS: kafka.AdapterTLS{
 				Enable: getOptionalBoolEnv(envNetTLSEnable),
+				Cert:   os.Getenv(envNetTLSCert),
+				Key:    os.Getenv(envNetTLSKey),
+				CACert: os.Getenv(envNetTLSCACert),
 			},
 		},
 	}

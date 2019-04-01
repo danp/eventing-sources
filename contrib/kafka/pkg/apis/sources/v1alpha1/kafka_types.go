@@ -56,7 +56,10 @@ type KafkaSourceSASLSpec struct {
 }
 
 type KafkaSourceTLSSpec struct {
-	Enable bool `json:"enable,omitempty"`
+	Enable bool   `json:"enable,omitempty"`
+	Cert   string `json:"cert,omitempty"`
+	Key    string `json:"key,omitempty"`
+	CACert string `json:"ca_cert,omitempty"`
 }
 
 type KafkaSourceNetSpec struct {
