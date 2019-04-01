@@ -103,11 +103,9 @@ func (a *Adapter) ConsumeClaim(sess sarama.ConsumerGroupSession, claim sarama.Co
 func (a *Adapter) Start(ctx context.Context, stopCh <-chan struct{}) error {
 	logger := logging.FromContext(ctx)
 
-	logger.Info("Starting with config: ", zap.Any("adapter", a))
-
 	kafkaConfig := sarama.NewConfig()
 	kafkaConfig.Consumer.Offsets.Initial = sarama.OffsetOldest
-	kafkaConfig.Version = sarama.V2_0_0_0
+	kafkaConfig.Version = sarama.V2_0_1_0
 	kafkaConfig.Consumer.Return.Errors = true
 	kafkaConfig.Net.SASL.Enable = a.Net.SASL.Enable
 	kafkaConfig.Net.SASL.User = a.Net.SASL.User
