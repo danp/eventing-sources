@@ -22,6 +22,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/Shopify/sarama"
 	kafka "github.com/knative/eventing-sources/contrib/kafka/pkg/adapter"
 
 	"go.uber.org/zap"
@@ -69,6 +70,8 @@ func getOptionalBoolEnv(key string) bool {
 
 func main() {
 	flag.Parse()
+
+	sarama.Logger = log.New(os.Stderr, "[Sarama] ", log.LstdFlags)
 
 	ctx := context.Background()
 	logCfg := zap.NewProductionConfig()
