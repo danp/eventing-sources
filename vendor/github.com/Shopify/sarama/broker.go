@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
+	"log"
 	"net"
 	"sort"
 	"strconv"
@@ -135,7 +136,9 @@ func (b *Broker) Open(conf *Config) error {
 			LocalAddr: conf.Net.LocalAddr,
 		}
 
+		log.Println("doing dial")
 		if conf.Net.TLS.Enable {
+			log.Println("doing tls dial")
 			b.conn, b.connErr = tls.DialWithDialer(&dialer, "tcp", b.addr, conf.Net.TLS.Config)
 		} else {
 			b.conn, b.connErr = dialer.Dial("tcp", b.addr)
