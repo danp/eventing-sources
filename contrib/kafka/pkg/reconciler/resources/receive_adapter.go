@@ -49,7 +49,8 @@ func MakeReceiveAdapter(args *ReceiveAdapterArgs) *v1.Deployment {
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
 					Annotations: map[string]string{
-						"sidecar.istio.io/inject": "true",
+						"sidecar.istio.io/inject":                          "true",
+						"traffic.sidecar.istio.io/excludeOutboundIPRanges": "0.0.0.0/0",
 					},
 					Labels: args.Labels,
 				},
