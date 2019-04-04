@@ -113,7 +113,7 @@ func (a *Adapter) Start(ctx context.Context, stopCh <-chan struct{}) error {
 	kafkaConfig.Net.TLS.Enable = a.Net.TLS.Enable
 
 	if a.Net.TLS.Enable && a.Net.TLS.Cert != "" {
-		tlsConfig, err := newTLSConfig(logger, a.Net.TLS.Cert, a.Net.TLS.Key, a.Net.TLS.CACert)
+		tlsConfig, err := newTLSConfig(a.Net.TLS.Cert, a.Net.TLS.Key, a.Net.TLS.CACert)
 		if err != nil {
 			return err
 		}
@@ -194,7 +194,7 @@ func (a *Adapter) jsonEncode(ctx context.Context, value []byte) interface{} {
 	}
 }
 
-func newTLSConfig(logger *zap.SugaredLogger, clientCert, clientKey, caCert string) (*tls.Config, error) {
+func newTLSConfig(clientCert, clientKey, caCert string) (*tls.Config, error) {
 	cert, err := tls.X509KeyPair([]byte(clientCert), []byte(clientKey))
 	if err != nil {
 		return nil, err
@@ -208,7 +208,7 @@ func newTLSConfig(logger *zap.SugaredLogger, clientCert, clientKey, caCert strin
 
 		// The CN of DoD-issued Kafka certs do not match the hostname of the
 		// broker, but Go's default TLS behavior requires that they do.
-		VerifyPeerCertificate: verifyCertSkipHostname(logger, caCertPool),
+		VerifyPeerCertificate: verifyCertSkipHostname(caCertPool),
 		InsecureSkipVerify:    true,
 	}
 	config.BuildNameToCertificate()
@@ -218,10 +218,8 @@ func newTLSConfig(logger *zap.SugaredLogger, clientCert, clientKey, caCert strin
 // verifyCertSkipHostname verifies certificates in the same way that the
 // default TLS handshake does, except it skips hostname verification. It must
 // be used with InsecureSkipVerify.
-func verifyCertSkipHostname(logger *zap.SugaredLogger, roots *x509.CertPool) func([][]byte, [][]*x509.Certificate) error {
+func verifyCertSkipHostname(roots *x509.CertPool) func([][]byte, [][]*x509.Certificate) error {
 	return func(certs [][]byte, _ [][]*x509.Certificate) error {
-		logger.Info("doing a verify")
-
 		opts := x509.VerifyOptions{
 			Roots:         roots,
 			CurrentTime:   time.Now(),
