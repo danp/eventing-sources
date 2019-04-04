@@ -105,17 +105,20 @@ func (a *Adapter) Start(ctx context.Context, stopCh <-chan struct{}) error {
 
 	kafkaConfig := sarama.NewConfig()
 	kafkaConfig.Consumer.Offsets.Initial = sarama.OffsetOldest
-	kafkaConfig.Version = sarama.V2_0_1_0
+	kafkaConfig.Version = sarama.V2_0_0_0
 	kafkaConfig.Consumer.Return.Errors = true
+	kafkaConfig.Net.SASL.Enable = a.Net.SASL.Enable
+	kafkaConfig.Net.SASL.User = a.Net.SASL.User
+	kafkaConfig.Net.SASL.Password = a.Net.SASL.Password
+	kafkaConfig.Net.TLS.Enable = a.Net.TLS.Enable
 
-	kafkaConfig.Net.TLS.Enable = true
-	// if a.Net.TLS.Enable && a.Net.TLS.Cert != "" {
-	tlsConfig, err := newTLSConfig(logger, a.Net.TLS.Cert, a.Net.TLS.Key, a.Net.TLS.CACert)
-	if err != nil {
-		return err
+	if a.Net.TLS.Enable && a.Net.TLS.Cert != "" {
+		tlsConfig, err := newTLSConfig(logger, a.Net.TLS.Cert, a.Net.TLS.Key, a.Net.TLS.CACert)
+		if err != nil {
+			return err
+		}
+		kafkaConfig.Net.TLS.Config = tlsConfig
 	}
-	kafkaConfig.Net.TLS.Config = tlsConfig
-	// }
 
 	// Start with a client
 	client, err := sarama.NewClient(strings.Split(a.BootstrapServers, ","), kafkaConfig)
