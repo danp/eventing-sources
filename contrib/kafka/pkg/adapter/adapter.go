@@ -206,7 +206,7 @@ func newTLSConfig(clientCert, clientKey, caCert string) (*tls.Config, error) {
 		Certificates: []tls.Certificate{cert},
 		RootCAs:      caCertPool,
 
-		// The CN of DoD-issued Kafka certs do not match the hostname of the
+		// The CN of Heroku Kafka certs do not match the hostname of the
 		// broker, but Go's default TLS behavior requires that they do.
 		VerifyPeerCertificate: verifyCertSkipHostname(caCertPool),
 		InsecureSkipVerify:    true,
