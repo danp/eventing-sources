@@ -49,7 +49,8 @@ func MakeReceiveAdapter(args *ReceiveAdapterArgs) *v1.Deployment {
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
 					Annotations: map[string]string{
-						"sidecar.istio.io/inject": "true",
+						"sidecar.istio.io/inject":                          "true",
+						"traffic.sidecar.istio.io/excludeOutboundIPRanges": "0.0.0.0/0",
 					},
 					Labels: args.Labels,
 				},
@@ -88,6 +89,18 @@ func MakeReceiveAdapter(args *ReceiveAdapterArgs) *v1.Deployment {
 								{
 									Name:  "KAFKA_NET_TLS_ENABLE",
 									Value: strconv.FormatBool(args.Source.Spec.Net.TLS.Enable),
+								},
+								{
+									Name:  "KAFKA_NET_TLS_CERT",
+									Value: args.Source.Spec.Net.TLS.Cert,
+								},
+								{
+									Name:  "KAFKA_NET_TLS_KEY",
+									Value: args.Source.Spec.Net.TLS.Key,
+								},
+								{
+									Name:  "KAFKA_NET_TLS_CA_CERT",
+									Value: args.Source.Spec.Net.TLS.CACert,
 								},
 								{
 									Name:  "SINK_URI",

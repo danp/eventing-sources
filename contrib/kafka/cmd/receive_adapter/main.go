@@ -22,6 +22,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/Shopify/sarama"
 	kafka "github.com/knative/eventing-sources/contrib/kafka/pkg/adapter"
 
 	"go.uber.org/zap"
@@ -40,6 +41,9 @@ const (
 	envNetSASLUser      = "KAFKA_NET_SASL_USER"
 	envNetSASLPassword  = "KAFKA_NET_SASL_PASSWORD"
 	envNetTLSEnable     = "KAFKA_NET_TLS_ENABLE"
+	envNetTLSCert       = "KAFKA_NET_TLS_CERT"
+	envNetTLSKey        = "KAFKA_NET_TLS_KEY"
+	envNetTLSCACert     = "KAFKA_NET_TLS_CA_CERT"
 	envSinkURI          = "SINK_URI"
 )
 
@@ -67,6 +71,8 @@ func getOptionalBoolEnv(key string) bool {
 func main() {
 	flag.Parse()
 
+	sarama.Logger = log.New(os.Stderr, "[Sarama] ", log.LstdFlags)
+
 	ctx := context.Background()
 	logCfg := zap.NewProductionConfig()
 	logCfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
@@ -88,6 +94,9 @@ func main() {
 			},
 			TLS: kafka.AdapterTLS{
 				Enable: getOptionalBoolEnv(envNetTLSEnable),
+				Cert:   os.Getenv(envNetTLSCert),
+				Key:    os.Getenv(envNetTLSKey),
+				CACert: os.Getenv(envNetTLSCACert),
 			},
 		},
 	}
